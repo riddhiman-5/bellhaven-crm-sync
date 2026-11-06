@@ -1,0 +1,7 @@
+{
+  "label": "Authorization: Bearer",
+  "header_names": [
+    "Authorization"
+  ],
+  "param_names": []
+}

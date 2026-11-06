@@ -1,0 +1,15 @@
+{
+  "_comment": "Matching rules. Edit here or on the app's Rules page; the next pipeline run uses them.",
+  "match_threshold": 50,
+  "confident_threshold": 75,
+  "possible_threshold": 20,
+  "weights": {
+    "street_zip": 60,
+    "street_city": 50,
+    "zip_only": 10,
+    "city": 5,
+    "phone": 20,
+    "admin_contact": 25,
+    "name_max": 15
+  }
+}

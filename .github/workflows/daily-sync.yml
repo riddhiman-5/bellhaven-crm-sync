@@ -1,0 +1,38 @@
+# Runs the read-only pipeline every day and commits the updated review queue (state.db).
+# Reviewers then pull the repo and approve/reject in the review app. The pipeline never writes
+# to the CRM itself; only an approval in the app does.
+name: Daily Bellhaven CRM sync
+
+on:
+  schedule:
+    - cron: "17 13 * * *"     # 13:17 UTC daily (~5-6am Pacific), before sales reps start
+  workflow_dispatch: {}        # allow manual runs from the Actions tab
+
+concurrency:
+  group: bellhaven-sync        # never two runs at once
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Run pipeline (scrape + match + queue proposals)
+        env:
+          BH_TOKEN: ${{ secrets.BH_TOKEN }}
+        run: python pipeline.py
+      - name: Commit updated review queue
+        run: |
+          git config user.name "bellhaven-sync-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add state.db data/
+          git diff --cached --quiet || git commit -m "Daily sync $(date -u +%F)"
+          git push

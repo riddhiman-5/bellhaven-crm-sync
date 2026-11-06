@@ -1,0 +1,4 @@
+requests>=2.31
+beautifulsoup4>=4.12
+streamlit>=1.45
+pandas>=2.0
